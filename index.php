@@ -284,14 +284,14 @@ function load_zarinpal_pmpro_class()
 
                 if ($result->Status == 100) {
                     if (self::do_level_up($morder, $trans_id)) {
-                        header('Location:' . pmpro_url('confirmation', '?level=' . $morder->membership_level->id));
+                        wp_safe_redirect(pmpro_url('confirmation', '?level=' . $morder->membership_level->id));
                     }
                 } else {
                     $Err = 'خطا در ارسال اطلاعات به زرین پال کد خطا :  ' . $result->Status;
                     $morder->status = 'cancelled';
                     $morder->notes = $Err;
                     $morder->saveOrder();
-                    header('Location: ' . pmpro_url());
+                    wp_safe_redirect(pmpro_url());
                     die($Err);
                 }
             }

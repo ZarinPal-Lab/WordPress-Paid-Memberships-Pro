@@ -22,7 +22,12 @@ Activate the plugin through the \'Plugins\' menu in WordPress
  == Changelog ==
 
 = 1.0 =
-* Just strat 
+* Just start 
 
 = 1.1 =
 * Fix currency and  tax rate problem
+
+= 1.2 =
+* update plugin after 4 years
+* fix an issue with paid membership pro v2.3
+* better redirect with [wp_safe_redirect](https://developer.wordpress.org/reference/functions/wp_safe_redirect/)

@@ -4,7 +4,7 @@
  * Plugin Name: Zarinpal Paid Memberships Pro
  * Description: درگاه پرداخت زرین‌پال برای افزونه Paid Memberships Pro
  * Author: Masoud Amini
- * Version: 1.1
+ * Version: 1.2
  * License: GPL v2.0.
  */
 //load classes init method

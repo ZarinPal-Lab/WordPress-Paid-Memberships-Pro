@@ -296,6 +296,9 @@ function load_zarinpal_pmpro_class()
                     wp_safe_redirect(pmpro_url());
                     exit;
                 }
+                if (wp_safe_redirect(get_site_url())) {
+                    exit;
+                }
             }
 
             public static function do_level_up(&$morder, $txn_id)

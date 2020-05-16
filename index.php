@@ -284,7 +284,9 @@ function load_zarinpal_pmpro_class()
 
                 if ($result->Status == 100) {
                     if (self::do_level_up($morder, $trans_id)) {
-                        wp_safe_redirect(pmpro_url('confirmation', '?level=' . $morder->membership_level->id));
+                        if (wp_safe_redirect(pmpro_url('confirmation', '?level=' . $morder->membership_level->id))) {
+                            exit;
+                        }
                     }
                 } else {
                     $Err = 'خطا در ارسال اطلاعات به زرین پال کد خطا :  ' . $result->Status;
@@ -292,7 +294,7 @@ function load_zarinpal_pmpro_class()
                     $morder->notes = $Err;
                     $morder->saveOrder();
                     wp_safe_redirect(pmpro_url());
-                    die($Err);
+                    exit;
                 }
             }
 

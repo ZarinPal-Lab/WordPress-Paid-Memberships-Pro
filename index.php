@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: Zarinpal Paid Memberships Pro
  * Description: درگاه پرداخت زرین‌پال برای افزونه Paid Memberships Pro
@@ -67,8 +68,8 @@ function load_zarinpal_pmpro_class()
             {
                 $options = [
                     'zarinpal_merchantid',
-					'currency',
-					'tax_rate',
+                    'currency',
+                    'tax_rate',
                 ];
 
                 return $options;
@@ -122,30 +123,30 @@ function load_zarinpal_pmpro_class()
              */
             public static function pmpro_payment_option_fields($values, $gateway)
             {
-                ?>
+?>
                 <tr class="pmpro_settings_divider gateway gateway_zarinpal" <?php if ($gateway != 'zarinpal') {
-                    ?>style="display: none;"<?php 
-                }
-                ?>>
-                <td colspan="2">
-                    <?php echo 'تنظیمات زرین‌پال';
-                ?>
-                </td>
+                                                                            ?>style="display: none;" <?php
+                                                                                                    }
+                                                                                                        ?>>
+                    <td colspan="2">
+                        <?php echo 'تنظیمات زرین‌پال';
+                        ?>
+                    </td>
                 </tr>
                 <tr class="gateway gateway_zarinpal" <?php if ($gateway != 'zarinpal') {
-                    ?>style="display: none;"<?php 
-                }
-                ?>>
-                <th scope="row" valign="top">
-                <label for="zarinpal_merchantid">کد مرچنت جهت اتصال به زرین‌پال:</label>
-                </th>
-                <td>
-                    <input type="text" id="zarinpal_merchantid" name="zarinpal_merchantid" size="60" value="<?php echo esc_attr($values['zarinpal_merchantid']);
-                ?>" />
-                </td>
+                                                        ?>style="display: none;" <?php
+                                                                                }
+                                                                                    ?>>
+                    <th scope="row" valign="top">
+                        <label for="zarinpal_merchantid">کد مرچنت جهت اتصال به زرین‌پال:</label>
+                    </th>
+                    <td>
+                        <input type="text" id="zarinpal_merchantid" name="zarinpal_merchantid" size="60" value="<?php echo esc_attr($values['zarinpal_merchantid']);
+                                                                                                                ?>" />
+                    </td>
                 </tr>
 
-                <?php
+<?php
 
             }
 
@@ -168,7 +169,7 @@ function load_zarinpal_pmpro_class()
 
                 //save discount code use
                 if (!empty($discount_code_id)) {
-                    $wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('".$discount_code_id."', '".$user_id."', '".$morder->id."', now())");
+                    $wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");
                 }
 
                 //$morder->Gateway->sendToTwocheckout($morder);
@@ -185,7 +186,7 @@ function load_zarinpal_pmpro_class()
                 }
 
                 $order_id = $morder->code;
-                $redirect = admin_url('admin-ajax.php')."?action=zarinpal-ins&oid=$order_id";
+                $redirect = admin_url('admin-ajax.php') . "?action=zarinpal-ins&oid=$order_id";
 
 
                 global $pmpro_currency;
@@ -199,14 +200,14 @@ function load_zarinpal_pmpro_class()
                 $client = new SoapClient($url, ['encoding' => 'UTF-8']);
 
                 $result = $client->PaymentRequest(
-                        [
-                            'MerchantID'  => $api,
-                            'Amount'      => $amount,
-                            'Description' => $order_id,
-                            'Email'       => '',
-                            'Mobile'      => '',
-                            'CallbackURL' => $redirect,
-                        ]
+                    [
+                        'MerchantID'  => $api,
+                        'Amount'      => $amount,
+                        'Description' => $order_id,
+                        'Email'       => '',
+                        'Mobile'      => '',
+                        'CallbackURL' => $redirect,
+                    ]
                 );
 
 
@@ -216,16 +217,14 @@ function load_zarinpal_pmpro_class()
                     echo  '<div style="border: 1px solid;margin:auto;padding:15px 10px 15px 50px; width:600px;font-size:8pt; line-height:25px;font-family:tahoma; text-align:right; direction:rtl;color: #00529B;background-color: #BDE5F8">
 							 درحال اتصال به درگاه پرداخت زرین‌پال ...
 							</div>';
-					echo '<script type="text/javascript" src="https://cdn.zarinpal.com/zarinak/v1/checkout.js"></script>
+                    echo '<script type="text/javascript" src="https://cdn.zarinpal.com/zarinak/v1/checkout.js"></script>
 						<script>
 						Zarinak.setAuthority( ' . $result->Authority . ');
 						Zarinak.open();
 						</script>';
                     die();
-					
-                    
                 } else {
-                    $Err = 'خطا در ارسال اطلاعات به زرین پال کد خطا :  '.$result->Status;
+                    $Err = 'خطا در ارسال اطلاعات به زرین پال کد خطا :  ' . $result->Status;
                     $morder->status = 'cancelled';
                     $morder->notes = $Err;
                     $morder->saveOrder();
@@ -276,23 +275,23 @@ function load_zarinpal_pmpro_class()
                 $client = new SoapClient($url, ['encoding' => 'UTF-8']);
 
                 $result = $client->PaymentVerification(
-                        [
-                            'MerchantID' => $api,
-                            'Authority'  => $Authority,
-                            'Amount'     => $Amount,
-                        ]
+                    [
+                        'MerchantID' => $api,
+                        'Authority'  => $Authority,
+                        'Amount'     => $Amount,
+                    ]
                 );
 
                 if ($result->Status == 100) {
                     if (self::do_level_up($morder, $trans_id)) {
-                        header('Location:'.pmpro_url('confirmation', '?level='.$morder->membership_level->id));
+                        header('Location:' . pmpro_url('confirmation', '?level=' . $morder->membership_level->id));
                     }
                 } else {
-                    $Err = 'خطا در ارسال اطلاعات به زرین پال کد خطا :  '.$result->Status;
+                    $Err = 'خطا در ارسال اطلاعات به زرین پال کد خطا :  ' . $result->Status;
                     $morder->status = 'cancelled';
                     $morder->notes = $Err;
                     $morder->saveOrder();
-                    header('Location: '.pmpro_url());
+                    header('Location: ' . pmpro_url());
                     die($Err);
                 }
             }
@@ -305,7 +304,7 @@ function load_zarinpal_pmpro_class()
 
                 //fix expiration date
                 if (!empty($morder->membership_level->expiration_number)) {
-                    $enddate = "'".date('Y-m-d', strtotime('+ '.$morder->membership_level->expiration_number.' '.$morder->membership_level->expiration_period, current_time('timestamp')))."'";
+                    $enddate = "'" . date('Y-m-d', strtotime('+ ' . $morder->membership_level->expiration_number . ' ' . $morder->membership_level->expiration_period, current_time('timestamp'))) . "'";
                 } else {
                     $enddate = 'NULL';
                 }
@@ -321,7 +320,7 @@ function load_zarinpal_pmpro_class()
                 }
 
                 //set the start date to current_time('mysql') but allow filters
-                $startdate = apply_filters('pmpro_checkout_start_date', "'".current_time('mysql')."'", $morder->user_id, $morder->membership_level);
+                $startdate = apply_filters('pmpro_checkout_start_date', "'" . current_time('mysql') . "'", $morder->user_id, $morder->membership_level);
 
                 //custom level to change user to
                 $custom_level = [
@@ -336,7 +335,8 @@ function load_zarinpal_pmpro_class()
                     'trial_amount'    => $morder->membership_level->trial_amount,
                     'trial_limit'     => $morder->membership_level->trial_limit,
                     'startdate'       => $startdate,
-                    'enddate'         => $enddate, ];
+                    'enddate'         => $enddate,
+                ];
 
                 global $pmpro_error;
                 if (!empty($pmpro_error)) {
@@ -356,7 +356,7 @@ function load_zarinpal_pmpro_class()
 
                     //add discount code use
                     if (!empty($discount_code) && !empty($use_discount_code)) {
-                        $wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('".$discount_code_id."', '".$morder->user_id."', '".$morder->id."', '".current_time('mysql')."')");
+                        $wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $morder->user_id . "', '" . $morder->id . "', '" . current_time('mysql') . "')");
                     }
 
                     //save first and last name fields

@@ -52,7 +52,7 @@ function load_zarinpal_pmpro_class()
             public static function pmpro_gateways($gateways)
             {
                 if (empty($gateways['zarinpal'])) {
-                    $gateways['zarinpal'] = 'زرینک';
+                    $gateways['zarinpal'] = 'زرین‌پال';
                 }
 
                 return $gateways;
@@ -67,8 +67,8 @@ function load_zarinpal_pmpro_class()
             {
                 $options = [
                     'zarinpal_merchantid',
-                    'currency',
-                    'tax_rate',
+					'currency',
+					'tax_rate',
                 ];
 
                 return $options;
@@ -124,25 +124,25 @@ function load_zarinpal_pmpro_class()
             {
                 ?>
                 <tr class="pmpro_settings_divider gateway gateway_zarinpal" <?php if ($gateway != 'zarinpal') {
-                ?>style="display: none;"<?php
+                    ?>style="display: none;"<?php 
                 }
                 ?>>
-                    <td colspan="2">
-                        <?php echo 'تنظیمات زرین‌پال';
-                        ?>
-                    </td>
+                <td colspan="2">
+                    <?php echo 'تنظیمات زرین‌پال';
+                ?>
+                </td>
                 </tr>
                 <tr class="gateway gateway_zarinpal" <?php if ($gateway != 'zarinpal') {
-                ?>style="display: none;"<?php
+                    ?>style="display: none;"<?php 
                 }
                 ?>>
-                    <th scope="row" valign="top">
-                        <label for="zarinpal_merchantid">کد مرچنت جهت اتصال به زرین‌پال:</label>
-                    </th>
-                    <td>
-                        <input type="text" id="zarinpal_merchantid" name="zarinpal_merchantid" size="60" value="<?php echo esc_attr($values['zarinpal_merchantid']);
-                        ?>" />
-                    </td>
+                <th scope="row" valign="top">
+                <label for="zarinpal_merchantid">کد مرچنت جهت اتصال به زرین‌پال:</label>
+                </th>
+                <td>
+                    <input type="text" id="zarinpal_merchantid" name="zarinpal_merchantid" size="60" value="<?php echo esc_attr($values['zarinpal_merchantid']);
+                ?>" />
+                </td>
                 </tr>
 
                 <?php
@@ -168,7 +168,7 @@ function load_zarinpal_pmpro_class()
 
                 //save discount code use
                 if (!empty($discount_code_id)) {
-                    $wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('".$discount_code_id."', '".$user_id."', '".$morder->id."', now())");
+                    $wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");
                 }
 
                 //$morder->Gateway->sendToTwocheckout($morder);
@@ -185,7 +185,7 @@ function load_zarinpal_pmpro_class()
                 }
 
                 $order_id = $morder->code;
-                $redirect = admin_url('admin-ajax.php')."?action=zarinpal-ins&oid=$order_id";
+                $redirect = admin_url('admin-ajax.php') . "?action=zarinpal-ins&oid=$order_id";
 
 
                 global $pmpro_currency;
@@ -199,7 +199,7 @@ function load_zarinpal_pmpro_class()
                 $data = array("merchant_id" => $api,
                     "amount" => $amount,
                     "callback_url" => $redirect,
-                    'description' => $order_id,
+                    "description" => $order_id,
                 );
                 $jsonData = json_encode($data);
                 $ch = curl_init('https://api.zarinpal.com/pg/v4/payment/request.json');
@@ -217,25 +217,31 @@ function load_zarinpal_pmpro_class()
                 $result = json_decode($result, true, JSON_PRETTY_PRINT);
                 curl_close($ch);
 
-
                 if ($err) {
                     echo "cURL Error #:" . $err;
                 } else {
-                    if (empty($result['errors'])) {
-                        if ($result['data']['code'] == 100) {
-                            header('Location: https://www.zarinpal.com/pg/StartPay/' . $result['data']["authority"]);
-                            //die();
-
-
-                        } else {
-                            $Err = 'خطا در ارسال اطلاعات به زرین پال کد خطا :  ' . $result['errors']['code'];
-                            $morder->status = 'cancelled';
-                            $morder->notes = $Err;
-                            $morder->saveOrder();
-                            die($Err);
-                        }
+                    if ($result['data']['code'] == 100) {
+                        echo' <html><body>
+<script type="text/javascript" src="https://cdn.zarinpal.com/zarinak/v1/checkout.js"></script>
+<script type="text/javascript">
+    window.onload = function () {
+       
+        Zarinak.setAuthority("' . $result['data']["authority"] . '");
+        Zarinak.showQR();
+        Zarinak.open();
+        
+    };
+</script></body></html>';
+                        die();
+                    } else {
+                        $Err = 'خطا در ارسال اطلاعات به زرین پال کد خطا :  ' . $result['errors']['code'];
+                        $morder->status = 'cancelled';
+                        $morder->notes = $Err;
+                        $morder->saveOrder();
+                        die($Err);
                     }
-                }}
+                }
+            }
 
             public static function pmpro_wp_ajax_zarinpal_ins()
             {
@@ -278,10 +284,11 @@ function load_zarinpal_pmpro_class()
                 }
 
 
-                $data = array('merchant_id' => $api, 'authority' => $Authority, 'amount' => $Amount);
+
+                $data = array("merchant_id" => $api, "authority" => $Authority, "amount" => $Amount);
                 $jsonData = json_encode($data);
                 $ch = curl_init('https://api.zarinpal.com/pg/v4/payment/verify.json');
-                curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+                curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v4');
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -294,23 +301,19 @@ function load_zarinpal_pmpro_class()
                 curl_close($ch);
                 $result = json_decode($result, true);
 
-                if ($err) {
-                    echo "cURL Error #:" . $err;
-                } else {
-                    if ($result['data']['code'] == 100) {
-
+                if ($result['data']['code'] == 100) {
                     if (self::do_level_up($morder, $trans_id)) {
                         header('Location:'.pmpro_url('confirmation', '?level='.$morder->membership_level->id));
                     }
                 } else {
-                    $Err = 'خطا در ارسال اطلاعات به زرین پال کد خطا :  '.$result ['data']['code'];
+                    $Err = 'خطا در ارسال اطلاعات به زرین پال کد خطا :  '.$result['errors']['code'];
                     $morder->status = 'cancelled';
                     $morder->notes = $Err;
                     $morder->saveOrder();
                     header('Location: '.pmpro_url());
                     die($Err);
                 }
-            }}
+            }
 
             public static function do_level_up(&$morder, $txn_id)
             {
